@@ -9,6 +9,8 @@ const envSchema = z.object({
   CURSOR_MODEL_ID: z.string().default("composer-2"),
   SUPABASE_URL: z.string().url(),
   SUPABASE_ANON_KEY: z.string().min(1),
+  ELEVENLABS_API_KEY: z.string().min(1, "ELEVENLABS_API_KEY is required for voice"),
+  ELEVENLABS_VOICE_ID: z.string().default("21m00Tcm4TlvDq8ikWAM"),
 });
 
 export type Env = z.infer<typeof envSchema>;

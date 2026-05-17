@@ -36,6 +36,11 @@ coverage/
 
 # Cursor / local agent artifacts
 .cursor/agent-runs/
+.cursor/mcp.json
+
+# GCP / service account credentials (never commit)
+interviewpilot-*.json
+*-credentials.json
 
 # Supabase
 .supabase/

@@ -1,0 +1,129 @@
+{
+  "name": "projects/4088641338352261422",
+  "title": "InterviewPilot AI Platform",
+  "designTheme": {
+    "colorMode": "LIGHT",
+    "font": "INTER",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#4f46e5",
+    "headlineFont": "INTER",
+    "bodyFont": "INTER",
+    "labelFont": "INTER",
+    "namedColors": {
+      "background": "#f8f9ff",
+      "error": "#ba1a1a",
+      "error_container": "#ffdad6",
+      "gradient-end": "#9333EA",
+      "gradient-start": "#4F46E5",
+      "inverse_on_surface": "#ebf1fc",
+      "inverse_primary": "#c3c0ff",
+      "inverse_surface": "#2b3139",
+      "muted-blue": "#305968",
+      "on_background": "#161c24",
+      "on_error": "#ffffff",
+      "on_error_container": "#93000a",
+      "on_primary": "#ffffff",
+      "on_primary_container": "#dad7ff",
+      "on_primary_fixed": "#0f0069",
+      "on_primary_fixed_variant": "#3323cc",
+      "on_secondary": "#ffffff",
+      "on_secondary_container": "#fffbff",
+      "on_secondary_fixed": "#2c0051",
+      "on_secondary_fixed_variant": "#6800b4",
+      "on_surface": "#161c24",
+      "on_surface_variant": "#464555",
+      "on_tertiary": "#ffffff",
+      "on_tertiary_container": "#ffd2be",
+      "on_tertiary_fixed": "#351000",
+      "on_tertiary_fixed_variant": "#7b2f00",
+      "outline": "#777587",
+      "outline_variant": "#c7c4d8",
+      "primary": "#3525cd",
+      "primary_container": "#4f46e5",
+      "primary_fixed": "#e2dfff",
+      "primary_fixed_dim": "#c3c0ff",
+      "secondary": "#831ada",
+      "secondary_container": "#9e41f5",
+      "secondary_fixed": "#f0dbff",
+      "secondary_fixed_dim": "#ddb8ff",
+      "success-teal": "#299A8D",
+      "surface": "#f8f9ff",
+      "surface-accent": "#F1F7F6",
+      "surface_bright": "#f8f9ff",
+      "surface_container": "#e9eefa",
+      "surface_container_high": "#e3e8f4",
+      "surface_container_highest": "#dde3ee",
+      "surface_container_low": "#eff4ff",
+      "surface_container_lowest": "#ffffff",
+      "surface_dim": "#d5dae5",
+      "surface_tint": "#4d44e3",
+      "surface_variant": "#dde3ee",
+      "tertiary": "#7e3000",
+      "tertiary_container": "#a44100",
+      "tertiary_fixed": "#ffdbcc",
+      "tertiary_fixed_dim": "#ffb695"
+    },
+    "designMd": "---\nname: InterviewPilot Design System\ncolors:\n  surface: '#f8f9ff'\n  surface-dim: '#d5dae5'\n  surface-bright: '#f8f9ff'\n  surface-container-lowest: '#ffffff'\n  surface-container-low: '#eff4ff'\n  surface-container: '#e9eefa'\n  surface-container-high: '#e3e8f4'\n  surface-container-highest: '#dde3ee'\n  on-surface: '#161c24'\n  on-surface-variant: '#464555'\n  inverse-surface: '#2b3139'\n  inverse-on-surface: '#ebf1fc'\n  outline: '#777587'\n  outline-variant: '#c7c4d8'\n  surface-tint: '#4d44e3'\n  primary: '#3525cd'\n  on-primary: '#ffffff'\n  primary-container: '#4f46e5'\n  on-primary-container: '#dad7ff'\n  inverse-primary: '#c3c0ff'\n  secondary: '#831ada'\n  on-secondary: '#ffffff'\n  secondary-container: '#9e41f5'\n  on-secondary-container: '#fffbff'\n  tertiary: '#7e3000'\n  on-tertiary: '#ffffff'\n  tertiary-container: '#a44100'\n  on-tertiary-container: '#ffd2be'\n  error: '#ba1a1a'\n  on-error: '#ffffff'\n  error-container: '#ffdad6'\n  on-error-container: '#93000a'\n  primary-fixed: '#e2dfff'\n  primary-fixed-dim: '#c3c0ff'\n  on-primary-fixed: '#0f0069'\n  on-primary-fixed-variant: '#3323cc'\n  secondary-fixed: '#f0dbff'\n  secondary-fixed-dim: '#ddb8ff'\n  on-secondary-fixed: '#2c0051'\n  on-secondary-fixed-variant: '#6800b4'\n  tertiary-fixed: '#ffdbcc'\n  tertiary-fixed-dim: '#ffb695'\n  on-tertiary-fixed: '#351000'\n  on-tertiary-fixed-variant: '#7b2f00'\n  background: '#f8f9ff'\n  on-background: '#161c24'\n  surface-variant: '#dde3ee'\n  gradient-start: '#4F46E5'\n  gradient-end: '#9333EA'\n  surface-accent: '#F1F7F6'\n  success-teal: '#299A8D'\n  muted-blue: '#305968'\ntypography:\n  headline-xl:\n    fontFamily: Inter\n    fontSize: 48px\n    fontWeight: '700'\n    lineHeight: 56px\n    letterSpacing: -0.02em\n  headline-lg:\n    fontFamily: Inter\n    fontSize: 32px\n    fontWeight: '600'\n    lineHeight: 40px\n    letterSpacing: -0.01em\n  headline-md:\n    fontFamily: Inter\n    fontSize: 24px\n    fontWeight: '600'\n    lineHeight: 32px\n  body-lg:\n    fontFamily: Inter\n    fontSize: 18px\n    fontWeight: '400'\n    lineHeight: 28px\n  body-md:\n    fontFamily: Inter\n    fontSize: 16px\n    fontWeight: '400'\n    lineHeight: 24px\n  label-md:\n    fontFamily: Inter\n    fontSize: 14px\n    fontWeight: '500'\n    lineHeight: 20px\n  headline-lg-mobile:\n    fontFamily: Inter\n    fontSize: 28px\n    fontWeight: '600'\n    lineHeight: 36px\nrounded:\n  sm: 0.25rem\n  DEFAULT: 0.5rem\n  md: 0.75rem\n  lg: 1rem\n  xl: 1.5rem\n  full: 9999px\nspacing:\n  container-max: 1280px\n  gutter: 24px\n  margin-mobile: 16px\n  section-gap: 80px\n  component-gap: 16px\n---\n\n## Brand & Style\n\nThe design system is engineered for a high-performance AI interview simulator, balancing the cold precision of technology with the warm encouragement of a personal coach. The brand personality is **Professional, Trustworthy, and High-Tech**. It aims to reduce candidate anxiety by providing a structured, \"cockpit-like\" environment that feels authoritative yet accessible.\n\nThe visual style is **Corporate / Modern** with subtle **Glassmorphism** used to highlight AI-driven insights. It utilizes expansive white space, a refined indigo-to-purple gradient to signal intelligence and creativity, and high-polish components that mirror the sophistication of the underlying LLM technology. The aesthetic prioritizes clarity and focus, ensuring the user's attention remains on the interview practice.\n\n## Colors\n\nThe palette revolves around a signature **Indigo-Purple gradient**, representing the intersection of logic (Blue) and innovation (Purple). \n\n- **Primary & Secondary:** Used exclusively for high-priority actions, progress indicators, and AI status states. The gradient flows from #4F46E5 to #9333EA.\n- **Neutrals:** The system uses a deep, ink-like neutral (#161C24) for primary text to ensure maximum legibility and a sense of \"Established Professionalism.\"\n- **Backgrounds:** Clean white (#FFFFFF) is the primary surface, with a very light teal-tinted neutral (#F1F7F6) used for secondary sections and \"empty state\" containers to keep the UI feeling fresh and breathable.\n- **Accents:** Success states and feedback loops utilize the Teal (#299A8D) extracted from the core inspiration to provide a calming, positive reinforcement.\n\n## Typography\n\nThis design system utilizes **Inter** across all levels to maintain a systematic, utilitarian, and highly legible appearance typical of top-tier SaaS products.\n\n- **Headlines:** Use tighter letter spacing and semi-bold to bold weights to create a strong visual anchor.\n- **Body:** Set with generous line heights to ensure long-form interview feedback and transcripts are easy to digest.\n- **Labels:** Used for metadata, category tags, and overline text, often employing a medium weight to distinguish from body copy without requiring larger sizes.\n- **Scale:** On mobile devices, headline sizes scale down approximately 15-20% to prevent awkward line breaks while maintaining hierarchy.\n\n## Layout & Spacing\n\nThe layout follows a **Fixed Grid** philosophy for the central content area, maxing out at 1280px to ensure focus on the dashboard and interview simulator. \n\n- **Grid System:** A 12-column grid is used for desktop, collapsing to 1 column for mobile. Gutters are fixed at 24px to provide clear separation between cards and navigation elements.\n- **Vertical Rhythm:** Sections are separated by an 80px gap to create a distinct narrative flow between \"The Simulator,\" \"Feedback,\" and \"Historical Progress.\"\n- **Alignment:** Inspired by the reference, content is often center-aligned for landing pages but left-aligned for the dashboard to provide a functional, data-heavy workspace.\n\n## Elevation & Depth\n\nVisual hierarchy is achieved through **Tonal Layers** and **Ambient Shadows**. \n\n1. **The Floor:** The main background is flat white (#FFFFFF).\n2. **The Cards:** Primary content sits on white cards with a very soft, diffused shadow (15% opacity of the Neutral color, 30px blur, 10px offset).\n3. **The Interactive Layer:** Hover states on primary buttons and active cards trigger a secondary shadow with a slight Indigo tint, creating a \"lift\" effect that signals interactivity.\n4. **The AI Layer:** Overlays and modals use a backdrop blur (12px) to create a glassmorphic effect, separating automated AI insights from the static interview content.\n\n## Shapes\n\nThe design system employs a **Rounded** shape language to soften the high-tech aesthetic and make the platform feel more approachable.\n\n- **Core Radius:** Most UI elements (buttons, inputs) use 0.5rem (8px).\n- **Container Radius:** Cards and main dashboard containers utilize `rounded-xl` (1.5rem / 24px) to create a distinctive, modern look that matches the \"2xl\" request in the design brief.\n- **Interactive Elements:** Checkboxes and small indicators use a 4px radius to maintain precision at smaller scales.\n\n## Components\n\n- **Buttons:** Primary buttons feature the Indigo-to-Purple gradient with white text. They have a \"high-polish\" look with a subtle inner top-light border (1px, 20% white) to give them a tactile, 3D feel.\n- **Cards:** White backgrounds, 24px corner radius, and soft ambient shadows. Cards should have a 1px border using #F1F7F6 to define edges against the white background.\n- **Inputs:** Fields use a 1px border (#E5E7EB) which transitions to an Indigo (#4F46E5) glow on focus. Labels sit 8px above the field in `label-md` style.\n- **Chips/Badges:** Used for \"Skills Found\" or \"Interview Score.\" These use the Success Teal (#299A8D) or Secondary Purple with 10% opacity backgrounds and full-saturation text.\n- **AI Simulator Window:** A specialized component featuring a dark-themed sidebar (using #161C24) and a glassmorphic transcript area to differentiate the \"Simulated Experience\" from the \"Analytical Dashboard.\"\n- **Lists:** Data lists utilize a horizontal divider system with 16px of vertical padding between items, following the clean, airy rhythm of the reference site.",
+    "colorVariant": "FIDELITY",
+    "overridePrimaryColor": "#4f46e5",
+    "overrideSecondaryColor": "#9333ea",
+    "overrideNeutralColor": "#161c24",
+    "spacingScale": 2,
+    "typography": {
+      "body-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "18px",
+        "fontWeight": "400",
+        "lineHeight": "28px"
+      },
+      "body-md": {
+        "fontFamily": "Inter",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "lineHeight": "24px"
+      },
+      "headline-lg": {
+        "fontFamily": "Inter",
+        "fontSize": "32px",
+        "fontWeight": "600",
+        "lineHeight": "40px",
+        "letterSpacing": "-0.01em"
+      },
+      "headline-lg-mobile": {
+        "fontFamily": "Inter",
+        "fontSize": "28px",
+        "fontWeight": "600",
+        "lineHeight": "36px"
+      },
+      "headline-md": {
+        "fontFamily": "Inter",
+        "fontSize": "24px",
+        "fontWeight": "600",
+        "lineHeight": "32px"
+      },
+      "headline-xl": {
+        "fontFamily": "Inter",
+        "fontSize": "48px",
+        "fontWeight": "700",
+        "lineHeight": "56px",
+        "letterSpacing": "-0.02em"
+      },
+      "label-md": {
+        "fontFamily": "Inter",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "lineHeight": "20px"
+      }
+    },
+    "spacing": {
+      "component-gap": "16px",
+      "container-max": "1280px",
+      "gutter": "24px",
+      "margin-mobile": "16px",
+      "section-gap": "80px"
+    },
+    "headlineFontFamily": "Inter",
+    "bodyFontFamily": "Inter",
+    "labelFontFamily": "Inter"
+  }
+}

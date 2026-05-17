@@ -6,6 +6,7 @@ import { env } from "./config/env.js";
 import { handleError } from "./middleware/error-handler.js";
 import { healthCheck } from "./controllers/interview.controller.js";
 import { interviewRoutes } from "./routes/interview.routes.js";
+import { voiceRoutes } from "./routes/voice.routes.js";
 
 const app = new Hono();
 
@@ -24,11 +25,13 @@ app.get("/", (c) =>
     name: "InterviewPilot API",
     version: "0.1.0",
     agents: ["captain", "evaluator", "report"],
+    voice: ["elevenlabs"],
   })
 );
 
 app.get("/health", healthCheck);
 app.route("/interview", interviewRoutes);
+app.route("/voice", voiceRoutes);
 
 app.onError((err, c) => handleError(err, c));
 

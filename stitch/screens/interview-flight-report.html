@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InterviewPilot - Flight Report</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#a44100",
+                        "on-background": "#161c24",
+                        "surface-container-high": "#e3e8f4",
+                        "tertiary": "#7e3000",
+                        "on-secondary-container": "#fffbff",
+                        "on-surface": "#161c24",
+                        "surface-container-highest": "#dde3ee",
+                        "surface-accent": "#F1F7F6",
+                        "secondary": "#831ada",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#2b3139",
+                        "background": "#f8f9ff",
+                        "on-tertiary-fixed": "#351000",
+                        "muted-blue": "#305968",
+                        "on-error": "#ffffff",
+                        "surface-container": "#e9eefa",
+                        "success-teal": "#299A8D",
+                        "primary-container": "#4f46e5",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#9e41f5",
+                        "outline": "#777587",
+                        "on-secondary-fixed-variant": "#6800b4",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d5dae5",
+                        "primary-fixed": "#e2dfff",
+                        "surface-variant": "#dde3ee",
+                        "on-surface-variant": "#464555",
+                        "outline-variant": "#c7c4d8",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "primary": "#3525cd",
+                        "surface-bright": "#f8f9ff",
+                        "secondary-fixed-dim": "#ddb8ff",
+                        "tertiary-fixed": "#ffdbcc",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#4d44e3",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "gradient-start": "#4F46E5",
+                        "on-secondary-fixed": "#2c0051",
+                        "on-primary-fixed": "#0f0069",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9ff",
+                        "secondary-fixed": "#f0dbff",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-container-low": "#eff4ff",
+                        "inverse-on-surface": "#ebf1fc",
+                        "on-primary-container": "#dad7ff",
+                        "on-tertiary-container": "#ffd2be",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "gradient-end": "#9333EA"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "section-gap": "80px",
+                        "component-gap": "16px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(241, 247, 250, 1);
+            box-shadow: 0 10px 30px rgba(22, 28, 36, 0.05);
+        }
+        .nav-active { border-bottom: 2px solid #3525cd; padding-bottom: 4px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen">
+<!-- SideNavBar (Authority: JSON) -->
+<nav class="hidden md:flex fixed left-0 top-0 h-full w-64 z-40 bg-on-background flex-col py-6 shadow-xl">
+<div class="px-6 mb-8">
+<h1 class="font-headline-md text-headline-md font-bold text-white">InterviewPilot</h1>
+<p class="text-primary-fixed font-label-md text-label-md opacity-80">AI Flight Deck</p>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-surface-variant hover:bg-surface-variant/10 rounded-lg px-4 py-3 mx-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 text-surface-variant hover:bg-surface-variant/10 rounded-lg px-4 py-3 mx-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-md text-label-md">Simulator</span>
+</a>
+<a class="flex items-center gap-3 bg-primary-container text-on-primary-container rounded-lg px-4 py-3 mx-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-md text-label-md">Flight Reports</span>
+</a>
+<a class="flex items-center gap-3 text-surface-variant hover:bg-surface-variant/10 rounded-lg px-4 py-3 mx-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 text-surface-variant hover:bg-surface-variant/10 rounded-lg px-4 py-3 mx-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+<div class="px-4 mb-6">
+<button class="w-full bg-gradient-to-r from-gradient-start to-gradient-end text-white font-label-md py-3 rounded-xl shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+                New Mission
+            </button>
+</div>
+<div class="mt-auto space-y-1 border-t border-outline/20 pt-4">
+<a class="flex items-center gap-3 text-surface-variant hover:bg-surface-variant/10 rounded-lg px-4 py-3 mx-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 text-surface-variant hover:bg-surface-variant/10 rounded-lg px-4 py-3 mx-2 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 p-gutter max-w-container-max mx-auto">
+<!-- Header Section -->
+<header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<nav class="flex items-center gap-2 text-on-surface-variant mb-4">
+<span class="font-label-md text-label-md">Missions</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="font-label-md text-label-md">Reports</span>
+</nav>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Flight Report: Senior Frontend Engineer Role</h2>
+<div class="flex items-center gap-4 mt-2">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="font-label-md text-label-md">October 24, 2024</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">timer</span>
+<span class="font-label-md text-label-md">45 Minute Duration</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container-highest text-on-surface font-label-md px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">share</span>
+                    Share Report
+                </button>
+<button class="bg-gradient-to-r from-gradient-start to-gradient-end text-white font-label-md px-6 py-3 rounded-xl flex items-center gap-2 shadow-md hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+                    Retake Interview
+                </button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Overall Score Card (Circle Progress) -->
+<div class="md:col-span-4 bg-white rounded-3xl p-8 glass-card flex flex-col items-center justify-center text-center">
+<h3 class="font-headline-md text-headline-md mb-8">Flight Readiness</h3>
+<div class="relative flex items-center justify-center">
+<svg class="w-48 h-48 transform -rotate-90">
+<circle class="text-surface-container-high" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-width="12"></circle>
+<circle cx="96" cy="96" fill="transparent" r="88" stroke="url(#scoreGradient)" stroke-dasharray="553" stroke-dashoffset="66.36" stroke-linecap="round" stroke-width="12"></circle>
+<defs>
+<lineargradient id="scoreGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" style="stop-color:#4F46E5"></stop>
+<stop offset="100%" style="stop-color:#9333EA"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-5xl font-bold font-headline-xl">88</span>
+<span class="text-on-surface-variant font-label-md">out of 100</span>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-4 w-full">
+<div class="p-3 bg-background rounded-2xl">
+<p class="text-on-surface-variant text-[12px] font-label-md mb-1">Technical Skills</p>
+<p class="font-headline-md text-primary">92%</p>
+</div>
+<div class="p-3 bg-background rounded-2xl">
+<p class="text-on-surface-variant text-[12px] font-label-md mb-1">Soft Skills</p>
+<p class="font-headline-md text-secondary">84%</p>
+</div>
+</div>
+</div>
+<!-- Captain's Feedback Card -->
+<div class="md:col-span-8 bg-on-background text-white rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+<!-- Abstract visual element -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] rounded-full -mr-20 -mt-20"></div>
+<div class="flex items-center gap-4 mb-6">
+<div class="w-16 h-16 rounded-full border-2 border-primary overflow-hidden flex-shrink-0">
+<img alt="AI Captain Avatar" class="w-full h-full object-cover" data-alt="A professional portrait of a futuristic AI mentor figure with sharp features and a kind expression. The lighting is dramatic with cool blue and purple cinematic accents. He is wearing a minimalist tech-suit that reflects a high-tech cockpit environment. The image communicates wisdom, authority, and professional guidance in a modern digital space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7F3gj-qlv98QKyqszOO8tXpGA__HOM7rkr5urfCmRkP8mmP1VZH8wTJDQH7HrV44YC_m71VkbV5RXa9q2ao8OxVZFnlt4U1mn4h5BJ_GcRXtCOS0hYW85ukSIqbSExgthMBmrmIWs_fLjDeujsI3ZiATsOC4wwywsTcj1WzAm3sdlqeD5mdmnS2YLhS8qQw1nQcc2iTgtaioBgKE9LPBsdevRxGUs7E4G4YfFLkoj3GnlNmTUp8M44b-Zle7y5E4fDo3LX3_oARI"/>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md">AI Captain's Assessment</h3>
+<p class="text-surface-variant opacity-80 font-label-md">Flight Instructor ID: IP-FRONTEND-04</p>
+</div>
+</div>
+<div class="space-y-4 relative z-10">
+<p class="text-surface-variant font-body-lg text-body-lg italic leading-relaxed">
+                        "Your performance during this simulation was impressive. You demonstrated a robust understanding of React design patterns and state management strategies. While your technical delivery was precise, I noticed a slight turbulence in how you explained trade-offs for architectural decisions. Overall, you are highly qualified for this 'flight,' but focusing on articulating 'the why' behind your code will make you an elite navigator."
+                    </p>
+<div class="pt-4 flex flex-wrap gap-2">
+<span class="px-4 py-1.5 bg-success-teal/20 text-success-teal border border-success-teal/30 rounded-full font-label-md text-[12px]">HIGH READINESS</span>
+<span class="px-4 py-1.5 bg-primary/20 text-primary-fixed border border-primary/30 rounded-full font-label-md text-[12px]">SYSTEM ARCHITECTURE EXPERT</span>
+<span class="px-4 py-1.5 bg-secondary/20 text-secondary-fixed border border-secondary/30 rounded-full font-label-md text-[12px]">USER-CENTRIC THINKER</span>
+</div>
+</div>
+</div>
+<!-- Strengths Analysis -->
+<div class="md:col-span-6 bg-white rounded-3xl p-8 glass-card">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-full bg-success-teal/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-success-teal" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h3 class="font-headline-md text-headline-md">Flight Strengths</h3>
+</div>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="text-success-teal mt-1">
+<span class="material-symbols-outlined">rocket_launch</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Mastery of Modern React Hooks</p>
+<p class="text-on-surface-variant text-body-md mt-1">Exceptional explanation of useEffect and useMemo optimization strategies during the live coding phase.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="text-success-teal mt-1">
+<span class="material-symbols-outlined">shield</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Security-First Mindset</p>
+<p class="text-on-surface-variant text-body-md mt-1">Correctly identified XSS vulnerabilities and suggested appropriate sanitization libraries.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="text-success-teal mt-1">
+<span class="material-symbols-outlined">speed</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Performance Debugging</p>
+<p class="text-on-surface-variant text-body-md mt-1">Quickly diagnosed a virtual DOM bottleneck in the simulated large-list scenario.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Improvements Analysis -->
+<div class="md:col-span-6 bg-white rounded-3xl p-8 glass-card">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<h3 class="font-headline-md text-headline-md">Turbulence Detected</h3>
+</div>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="text-tertiary mt-1">
+<span class="material-symbols-outlined">translate</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Accessibility Articulation</p>
+<p class="text-on-surface-variant text-body-md mt-1">Consider diving deeper into WCAG guidelines. You implemented ARIA, but failed to explain the why.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="text-tertiary mt-1">
+<span class="material-symbols-outlined">view_quilt</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Component Modularization</p>
+<p class="text-on-surface-variant text-body-md mt-1">In the larger design challenge, your component became slightly bloated. Suggest Atomic Design patterns.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="text-tertiary mt-1">
+<span class="material-symbols-outlined">chat</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Stakeholder Communication</p>
+<p class="text-on-surface-variant text-body-md mt-1">Technical jargon was high. Try simplifying complex concepts for non-technical teammates.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Flight Plan (Improvement Plan) -->
+<div class="md:col-span-12 bg-surface-accent rounded-3xl p-8 border border-success-teal/20">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gradient-to-br from-gradient-start to-gradient-end flex items-center justify-center text-white">
+<span class="material-symbols-outlined">map</span>
+</div>
+<h3 class="font-headline-md text-headline-md">Your 7-Day Flight Plan</h3>
+</div>
+<div class="hidden md:block">
+<span class="font-label-md text-on-surface-variant italic">Next Mission Suggested: November 1st</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col items-center text-center">
+<div class="mb-4 text-primary bg-primary/5 p-3 rounded-full">
+<span class="material-symbols-outlined">school</span>
+</div>
+<h4 class="font-bold mb-2">Deep Dive A11y</h4>
+<p class="text-on-surface-variant text-body-md">Review Web Content Accessibility Guidelines and focus on keyboard navigation patterns.</p>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col items-center text-center">
+<div class="mb-4 text-secondary bg-secondary/5 p-3 rounded-full">
+<span class="material-symbols-outlined">architecture</span>
+</div>
+<h4 class="font-bold mb-2">Refactor Challenge</h4>
+<p class="text-on-surface-variant text-body-md">Redesign a past project using Atomic Design principles to improve modularity.</p>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col items-center text-center">
+<div class="mb-4 text-success-teal bg-success-teal/5 p-3 rounded-full">
+<span class="material-symbols-outlined">record_voice_over</span>
+</div>
+<h4 class="font-bold mb-2">The "Why" Pitch</h4>
+<p class="text-on-surface-variant text-body-md">Practice explaining technical trade-offs in 30 seconds for non-tech audiences.</p>
+</div>
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-outline-variant/30 flex flex-col items-center text-center">
+<div class="mb-4 text-tertiary bg-tertiary/5 p-3 rounded-full">
+<span class="material-symbols-outlined">play_circle</span>
+</div>
+<h4 class="font-bold mb-2">Simulated Mission</h4>
+<p class="text-on-surface-variant text-body-md">Retake the Senior Frontend module with a focus on 'Stakeholder Empathy'.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Section -->
+<footer class="mt-section-gap pb-12 w-full flex flex-col md:flex-row justify-between items-center border-t border-outline-variant py-12">
+<div class="mb-6 md:mb-0">
+<h4 class="font-headline-md text-headline-md font-bold text-on-background">InterviewPilot AI</h4>
+<p class="text-on-surface-variant font-body-md mt-1">© 2024 InterviewPilot AI. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="text-on-surface-variant font-label-md hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant font-label-md hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-on-surface-variant font-label-md hover:text-primary transition-colors" href="#">Support</a>
+<a class="text-on-surface-variant font-label-md hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+</footer>
+</main>
+<!-- Mobile Bottom Nav (Authority: JSON) -->
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-white z-50 px-6 py-3 flex justify-between items-center shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+<button class="flex flex-col items-center text-on-surface-variant">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-label-md">Dash</span>
+</button>
+<button class="flex flex-col items-center text-on-surface-variant">
+<span class="material-symbols-outlined">psychology</span>
+<span class="text-[10px] font-label-md">Sim</span>
+</button>
+<button class="flex flex-col items-center text-primary border-t-2 border-primary pt-1">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assessment</span>
+<span class="text-[10px] font-label-md">Reports</span>
+</button>
+<button class="flex flex-col items-center text-on-surface-variant">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="text-[10px] font-label-md">Stats</span>
+</button>
+<button class="flex flex-col items-center text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-label-md">Set</span>
+</button>
+</div>
+</body></html>

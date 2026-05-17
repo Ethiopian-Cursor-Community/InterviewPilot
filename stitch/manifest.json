@@ -1,0 +1,59 @@
+{
+  "project": "projects/4088641338352261422",
+  "title": "InterviewPilot AI Platform",
+  "screens": [
+    {
+      "name": "projects/4088641338352261422/screens/e249ff17ab554c9cbfb68fcc502194f8",
+      "title": "Interview Session with Captain",
+      "slug": "interview-session-with-captain",
+      "width": "2560",
+      "height": "2048",
+      "htmlFile": "stitch/screens/interview-session-with-captain.html",
+      "htmlBytes": 15400,
+      "screenshotFile": "stitch/screens/interview-session-with-captain.jpg",
+      "screenshotBytes": 59174
+    },
+    {
+      "name": "projects/4088641338352261422/screens/5f1b9f0f02ed4402b9eaf89419d10eed",
+      "title": "Interview Flight Report",
+      "slug": "interview-flight-report",
+      "width": "2560",
+      "height": "3610",
+      "htmlFile": "stitch/screens/interview-flight-report.html",
+      "htmlBytes": 22199,
+      "screenshotFile": "stitch/screens/interview-flight-report.jpg",
+      "screenshotBytes": 88994
+    },
+    {
+      "name": "projects/4088641338352261422/screens/d0d36720ce2f424099067b5013622930",
+      "title": "InterviewPilot Dashboard",
+      "slug": "interviewpilot-dashboard",
+      "width": "2560",
+      "height": "2728",
+      "htmlFile": "stitch/screens/interviewpilot-dashboard.html",
+      "htmlBytes": 20146,
+      "screenshotFile": "stitch/screens/interviewpilot-dashboard.jpg",
+      "screenshotBytes": 62303
+    },
+    {
+      "name": "projects/4088641338352261422/screens/55bd6ff1010d41a085d8085b7c1cbb44",
+      "title": "InterviewPilot Landing Page",
+      "slug": "interviewpilot-landing-page",
+      "width": "2560",
+      "height": "7158",
+      "htmlFile": "stitch/screens/interviewpilot-landing-page.html",
+      "htmlBytes": 21077,
+      "screenshotFile": "stitch/screens/interviewpilot-landing-page.jpg",
+      "screenshotBytes": 58420
+    },
+    {
+      "name": "projects/4088641338352261422/screens/29651a5236604a4c8f225a99bf26050e",
+      "title": "InterviewPilot Logo",
+      "slug": "interviewpilot-logo",
+      "width": "1024",
+      "height": "1024",
+      "screenshotFile": "stitch/screens/interviewpilot-logo.jpg",
+      "screenshotBytes": 21289
+    }
+  ]
+}

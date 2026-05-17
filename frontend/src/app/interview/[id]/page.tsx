@@ -2,10 +2,11 @@
 
 import { use, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Navbar } from "@/components/Navbar";
+import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/client";
+import { VoiceControls } from "@/components/VoiceControls";
 import { api, type AnswerEvaluation, type Question } from "@/lib/api";
 
 export default function InterviewSessionPage({
@@ -25,6 +26,7 @@ export default function InterviewSessionPage({
   const [error, setError] = useState<string | null>(null);
   const [role, setRole] = useState("");
   const [questionNum, setQuestionNum] = useState(1);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   const loadSession = useCallback(async () => {
     const supabase = createClient();
@@ -34,7 +36,10 @@ export default function InterviewSessionPage({
       return;
     }
 
-    const res = await api.getInterview(session.session.access_token, interviewId);
+    const token = session.session.access_token;
+    setAccessToken(token);
+
+    const res = await api.getInterview(token, interviewId);
     if (!res.success) {
       setError(res.error);
       setLoading(false);
@@ -127,56 +132,67 @@ export default function InterviewSessionPage({
 
   if (loading) {
     return (
-      <>
-        <Navbar />
-        <main className="mx-auto max-w-2xl px-4 py-20 text-center text-zinc-500">
+      <AppShell activeNav="/modes">
+        <main className="mx-auto max-w-2xl px-4 py-20 text-center text-on-surface-variant">
           Loading interview…
         </main>
-      </>
+      </AppShell>
     );
   }
 
   return (
-    <>
-      <Navbar />
-      <main className="mx-auto max-w-2xl px-4 py-10">
+    <AppShell activeNav="/modes">
+      <main className="mx-auto max-w-3xl px-4 py-10 pb-24">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <p className="text-sm text-indigo-400">Captain · Interviewer Agent</p>
-            <h1 className="text-xl font-bold">{role} Interview</h1>
+            <p className="text-sm text-primary">Captain · Live Session</p>
+            <h1 className="text-xl font-semibold text-on-surface">{role} Interview</h1>
           </div>
-          <span className="text-sm text-zinc-500">Question {questionNum} of 5</span>
+          <span className="rounded-full bg-surface-container-low px-3 py-1 text-sm text-on-surface-variant">
+            Question {questionNum} of 5
+          </span>
         </div>
 
         {question && (
           <Card className="mb-6">
-            <p className="mb-1 text-xs uppercase tracking-wide text-zinc-500">
+            <p className="mb-1 text-xs uppercase tracking-wide text-on-surface-variant">
               {question.focus_area ?? "General"}
             </p>
             <p className="text-lg leading-relaxed">{question.text}</p>
+            {accessToken && (
+              <div className="mt-4 border-t border-outline-variant/30 pt-4">
+                <VoiceControls
+                  token={accessToken}
+                  questionText={question.text}
+                  answer={answer}
+                  onAnswerChange={setAnswer}
+                  disabled={submitting || !!evaluation}
+                />
+              </div>
+            )}
           </Card>
         )}
 
         <Card>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <label className="block text-sm text-zinc-400">Your answer</label>
+            <label className="block text-sm text-on-surface-variant">Your answer</label>
             <textarea
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               rows={6}
               disabled={submitting || !!evaluation}
-              placeholder="Type your answer here…"
-              className="w-full resize-none rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none disabled:opacity-60"
+              placeholder="Type or use voice to record your answer…"
+              className="input-field resize-none disabled:opacity-60"
             />
 
             {evaluation && (
-              <div className="rounded-lg border border-zinc-700 bg-zinc-950 p-4 text-sm">
-                <p className="mb-2 font-medium text-indigo-300">
-                  Evaluator Agent · Score: {evaluation.score}/10
+              <div className="rounded-xl border border-outline-variant/30 bg-surface-container-low p-4 text-sm">
+                <p className="mb-2 font-medium text-primary">
+                  Evaluator · Score: {evaluation.score}/10
                 </p>
-                <p className="text-zinc-300">{evaluation.feedback}</p>
+                <p className="text-on-surface">{evaluation.feedback}</p>
                 {evaluation.strengths.length > 0 && (
-                  <p className="mt-2 text-green-400">
+                  <p className="mt-2 text-secondary">
                     + {evaluation.strengths.join(", ")}
                   </p>
                 )}
@@ -200,6 +216,6 @@ export default function InterviewSessionPage({
           </form>
         </Card>
       </main>
-    </>
+    </AppShell>
   );
 }

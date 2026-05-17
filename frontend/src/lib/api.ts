@@ -107,4 +107,35 @@ export const api = {
       questions: Array<Question & { answer?: { text: string; evaluation: AnswerEvaluation } }>;
       report: Report | null;
     }>(`/interview/${id}`, { method: "GET", token }),
+
+  speak: async (token: string, text: string): Promise<Blob> => {
+    const res = await fetch(`${API_URL}/voice/speak`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ text }),
+    });
+
+    if (!res.ok) {
+      const json = (await res.json().catch(() => null)) as ApiFailure | null;
+      throw new Error(json?.error ?? `Text-to-speech failed (${res.status})`);
+    }
+
+    return res.blob();
+  },
+
+  transcribe: async (token: string, audio: Blob): Promise<ApiResult<{ text: string }>> => {
+    const form = new FormData();
+    form.append("file", audio, "recording.webm");
+
+    const res = await fetch(`${API_URL}/voice/transcribe`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: form,
+    });
+
+    return (await res.json()) as ApiResult<{ text: string }>;
+  },
 };

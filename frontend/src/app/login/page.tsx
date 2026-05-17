@@ -1,11 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { isProfileComplete } from "@/lib/profile";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,7 +22,6 @@ export default function LoginPage() {
     setLoading(true);
 
     const supabase = createClient();
-
     const result = isSignUp
       ? await supabase.auth.signUp({ email, password })
       : await supabase.auth.signInWithPassword({ email, password });
@@ -33,75 +33,101 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    const next = isProfileComplete() ? "/dashboard" : "/onboarding";
+    router.push(next);
     router.refresh();
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">InterviewPilot</h1>
-          <p className="mt-2 text-zinc-400">
-            Practice interviews with Captain — powered by Cursor SDK
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-5%] top-[-10%] h-[40%] w-[40%] rounded-full bg-primary/5 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-5%] h-[40%] w-[40%] rounded-full bg-secondary/5 blur-[120px]" />
+      </div>
+
+      <main className="relative z-10 w-full max-w-[440px]">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <Image src="/logo.jpg" alt="InterviewPilot" width={64} height={64} className="mb-4 rounded-2xl" />
+          <h1 className="text-3xl font-semibold tracking-tight text-on-surface">InterviewPilot</h1>
+          <p className="mt-2 text-on-surface-variant">
+            Elevate your interview performance with AI
           </p>
         </div>
 
-        <Card>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="mb-1 block text-sm text-zinc-400">Email</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
-                placeholder="you@university.edu"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm text-zinc-400">Password</label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
-                placeholder="••••••••"
-              />
-            </div>
+        <div className="glass-card relative overflow-hidden rounded-3xl p-8 md:p-10">
+          <div className="mb-8 flex rounded-xl bg-surface-container-low p-1">
+            <button
+              type="button"
+              onClick={() => setIsSignUp(false)}
+              className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${
+                !isSignUp
+                  ? "bg-surface-container-lowest text-primary shadow-sm"
+                  : "text-on-surface-variant"
+              }`}
+            >
+              Login
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsSignUp(true)}
+              className={`flex-1 rounded-lg py-2 text-sm font-medium transition ${
+                isSignUp
+                  ? "bg-surface-container-lowest text-primary shadow-sm"
+                  : "text-on-surface-variant"
+              }`}
+            >
+              Sign Up
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <Input
+              label="Email Address"
+              icon="mail"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="name@company.com"
+            />
+            <Input
+              label="Password"
+              icon="lock"
+              type="password"
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+            />
 
             {error && (
-              <p className="text-sm text-red-400" role="alert">
+              <p className="rounded-lg bg-error-container px-3 py-2 text-sm text-on-error-container" role="alert">
                 {error}
               </p>
             )}
 
-            <Button type="submit" className="w-full" loading={loading}>
-              {isSignUp ? "Create account" : "Sign in"}
+            <Button type="submit" className="w-full" size="lg" loading={loading}>
+              {isSignUp ? "Create account" : "Sign In"}
             </Button>
           </form>
 
-          <p className="mt-4 text-center text-sm text-zinc-500">
-            {isSignUp ? "Already have an account?" : "New here?"}{" "}
-            <button
-              type="button"
-              className="text-indigo-400 hover:underline"
-              onClick={() => setIsSignUp(!isSignUp)}
-            >
-              {isSignUp ? "Sign in" : "Sign up"}
-            </button>
+          <p className="mt-8 text-center text-xs text-on-surface-variant">
+            By continuing, you agree to our Terms of Service and Privacy Policy.
           </p>
-        </Card>
+        </div>
 
-        <p className="text-center text-xs text-zinc-600">
-          <Link href="/dashboard" className="hover:text-zinc-400">
-            Skip to dashboard (requires auth)
-          </Link>
-        </p>
-      </div>
+        <div className="mt-8 flex justify-center gap-6 text-on-surface-variant">
+          <span className="flex items-center gap-2 text-xs">
+            <span className="material-symbols-outlined text-lg">verified_user</span>
+            Enterprise Secure
+          </span>
+          <span className="flex items-center gap-2 text-xs">
+            <span className="material-symbols-outlined text-lg">support_agent</span>
+            24/7 Support
+          </span>
+        </div>
+      </main>
     </div>
   );
 }

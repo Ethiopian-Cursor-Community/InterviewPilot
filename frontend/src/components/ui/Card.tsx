@@ -3,15 +3,13 @@ import type { ReactNode } from "react";
 export function Card({
   children,
   className = "",
+  padding = "p-6",
 }: {
   children: ReactNode;
   className?: string;
+  padding?: string;
 }) {
   return (
-    <div
-      className={`rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 backdrop-blur ${className}`}
-    >
-      {children}
-    </div>
+    <div className={`glass-card rounded-3xl ${padding} ${className}`}>{children}</div>
   );
 }
