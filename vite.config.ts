@@ -2,7 +2,8 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
-import { defineConfig, loadEnv, mergeConfig } from "vite";
+import { nitro } from "nitro/vite";
+import { defineConfig, loadEnv } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 
 // TanStack Start server entry (see wrangler.jsonc main).
@@ -13,15 +14,24 @@ export default defineConfig(({ command, mode }) => {
     envDefine[`import.meta.env.${key}`] = JSON.stringify(value);
   }
 
+  const deployTarget =
+    process.env.VERCEL === "1"
+      ? "vercel"
+      : process.env.CF_PAGES === "1" || process.env.CLOUDFLARE === "1"
+        ? "cloudflare"
+        : "cloudflare";
+
   const plugins = [
     tailwindcss(),
     tsConfigPaths({ projects: ["./tsconfig.json"] }),
     ...(command === "build"
-      ? [
-          cloudflare({
-            viteEnvironment: { name: "ssr" },
-          }),
-        ]
+      ? deployTarget === "vercel"
+        ? [nitro()]
+        : [
+            cloudflare({
+              viteEnvironment: { name: "ssr" },
+            }),
+          ]
       : []),
     tanstackStart({
       importProtection: {
@@ -36,33 +46,34 @@ export default defineConfig(({ command, mode }) => {
     viteReact(),
   ];
 
-  return mergeConfig(
-    {
-      define: envDefine,
-      resolve: {
-        alias: {
-          "@": `${process.cwd()}/src`,
-        },
-        dedupe: [
-          "react",
-          "react-dom",
-          "react/jsx-runtime",
-          "react/jsx-dev-runtime",
-          "@tanstack/react-query",
-          "@tanstack/query-core",
-        ],
+  const vercelBuild = deployTarget === "vercel" && command === "build";
+
+  return {
+    define: envDefine,
+    ...(vercelBuild
+      ? {
+          ssr: {
+            external: ["@cursor/sdk"],
+          },
+        }
+      : {}),
+    resolve: {
+      alias: {
+        "@": `${process.cwd()}/src`,
       },
-      server: { host: "::", port: 8080 },
-      plugins,
+      dedupe: [
+        "react",
+        "react-dom",
+        "react/jsx-runtime",
+        "react/jsx-dev-runtime",
+        "@tanstack/react-query",
+        "@tanstack/query-core",
+      ],
     },
-    {
-      ssr: {
-        external: ["@cursor/sdk"],
-        noExternal: [],
-      },
-      optimizeDeps: {
-        exclude: ["@cursor/sdk"],
-      },
+    server: { host: "::", port: 8080 },
+    plugins,
+    optimizeDeps: {
+      exclude: ["@cursor/sdk"],
     },
-  );
+  };
 });
