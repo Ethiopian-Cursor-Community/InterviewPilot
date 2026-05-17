@@ -49,10 +49,13 @@ function AuthPage() {
       if (mode === "signup") {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        if (!data.session) {
-          throw new Error("Account created but sign-in failed. Try signing in.");
+        // Do not keep an auto session from signUp — user signs in explicitly next.
+        if (data.session) {
+          await supabase.auth.signOut();
         }
-        navigate({ to: "/dashboard" });
+        toast.success("Registered successfully. Sign in.");
+        setMode("signin");
+        setPassword("");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -93,7 +96,7 @@ function AuthPage() {
           <p className="text-sm text-muted-foreground mb-6">
             {mode === "signin"
               ? "Sign in with your email or Google to continue practicing."
-              : "Sign up with your email or Google — pick what works for you."}
+              : "Create an account, then sign in with the same email and password."}
           </p>
 
           <Button
