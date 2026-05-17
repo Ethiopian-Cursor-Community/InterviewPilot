@@ -20,6 +20,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const redirectTo = `${window.location.origin}/auth/callback`;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -30,10 +31,9 @@ function AuthPage() {
   async function signInWithGoogle() {
     setBusy(true);
     try {
-      const redirectTo = `${window.location.origin}/auth/callback`;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo },
+        options: { redirectTo: `${window.location.origin}/dashboard` },
       });
       if (error) throw error;
     } catch (err) {

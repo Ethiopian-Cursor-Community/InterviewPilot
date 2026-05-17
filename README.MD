@@ -41,15 +41,24 @@ Built with Cursor SDK, the platform creates realistic interview experiences for 
 # 🏗 Tech Stack
 
 ## Frontend
+
 - Next.js
 - React
 - Tailwind CSS
 
 ## Backend
+
 - Node.js
 - Supabase
 
+## Supabase Auth
+
+- Supabase project: `ivoyhrmpojvyersxbmoo`
+- Google OAuth callback follows the current app origin, so it returns to the deployed app in production and localhost during development.
+- Google auth is already configured in Supabase for this project.
+
 ## AI & Voice
+
 - Cursor SDK
 - OpenAI APIs
 - Voice AI Integration
@@ -71,6 +80,7 @@ InterviewPilot uses multiple AI agents to simulate realistic interview environme
 # 🎯 Problem
 
 Many candidates struggle with:
+
 - interview anxiety
 - lack of realistic practice
 - poor feedback quality
@@ -91,6 +101,7 @@ We aim to help students, developers, and job seekers gain confidence and improve
 # ⚡️ Why Cursor SDK
 
 Cursor SDK enables us to build:
+
 - AI-native workflows
 - multi-agent orchestration
 - intelligent conversational experiences

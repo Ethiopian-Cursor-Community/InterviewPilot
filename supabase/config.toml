@@ -1,6 +1,7 @@
-project_id = "ojfmpfterksiwtioxgfe"
+project_id = "ivoyhrmpojvyersxbmoo"
 
 [auth]
+site_url = "http://localhost:5173"
 enable_signup = true
 
 [auth.email]
