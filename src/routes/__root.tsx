@@ -12,7 +12,7 @@ import { ThemeProvider, useTheme } from "@/components/theme-provider";
 
 import appCss from "../styles.css?url";
 
-const PREPAINT_SCRIPT = `(function(){try{var t=localStorage.getItem('vocalist-theme')||'system';var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`;
+const PREPAINT_SCRIPT = `(function(){try{var t=localStorage.getItem('interviewpilot-theme')||'system';var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`;
 
 function NotFoundComponent() {
   return (
@@ -63,10 +63,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Vocalist — Realistic AI interview practice" },
+      { title: "InterviewPilot — Realistic AI interview practice" },
       { name: "description", content: "Upload your resume and run high-stakes AI voice interviews. Get adaptive follow-ups, multi-agent scoring, and a coaching roadmap." },
-      { name: "author", content: "Vocalist" },
-      { property: "og:title", content: "Vocalist — Realistic AI interview practice" },
+      { name: "author", content: "InterviewPilot" },
+      { property: "og:title", content: "InterviewPilot — Realistic AI interview practice" },
       { property: "og:description", content: "Voice interviews with a multi-agent AI panel. Brutal honesty, real growth." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

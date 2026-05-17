@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/reports")({
   component: ReportsPage,
-  head: () => ({ meta: [{ title: "Reports · Vocalist" }] }),
+  head: () => ({ meta: [{ title: "Reports · InterviewPilot" }] }),
 });
 
 function scoreTone(score: number) {

@@ -20,7 +20,7 @@ import {
 
 export const Route = createFileRoute("/_authenticated/setup")({
   component: Setup,
-  head: () => ({ meta: [{ title: "New interview · Vocalist" }] }),
+  head: () => ({ meta: [{ title: "New interview · InterviewPilot" }] }),
 });
 
 const MODES = [

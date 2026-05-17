@@ -42,7 +42,7 @@ function fmtMmSs(totalSec: number) {
 
 export const Route = createFileRoute("/_authenticated/report/$id")({
   component: Report,
-  head: () => ({ meta: [{ title: "Report · Vocalist" }] }),
+  head: () => ({ meta: [{ title: "Report · InterviewPilot" }] }),
 });
 
 function Report() {

@@ -10,7 +10,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
-  head: () => ({ meta: [{ title: "Sign in · Vocalist" }] }),
+  head: () => ({ meta: [{ title: "Sign in · InterviewPilot" }] }),
 });
 
 function AuthPage() {
@@ -67,7 +67,7 @@ function AuthPage() {
           <div className="size-9 rounded-lg bg-gradient-brand grid place-items-center shadow-sm shadow-brand/30 group-hover:rotate-6 transition-transform">
             <Sparkles className="size-4 text-white" />
           </div>
-          <span className="font-display text-xl font-bold tracking-tight">VOCALIST</span>
+          <span className="font-display text-xl font-bold tracking-tight">InterviewPilot</span>
         </Link>
 
         <div className="rounded-2xl border border-border bg-card p-7 shadow-sm">

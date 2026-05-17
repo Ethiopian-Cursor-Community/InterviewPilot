@@ -22,7 +22,7 @@ function titleFor(pathname: string): string {
   if (TITLES[pathname]) return TITLES[pathname];
   if (pathname.startsWith("/interview/")) return "Interview";
   if (pathname.startsWith("/report/")) return "Report";
-  return "Vocalist";
+  return "InterviewPilot";
 }
 
 export function AppTopbar() {

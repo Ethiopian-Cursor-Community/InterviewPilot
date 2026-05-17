@@ -9,7 +9,7 @@ export const Route = createFileRoute("/")({
   component: Landing,
   head: () => ({
     meta: [
-      { title: "Vocalist — Realistic AI interview practice" },
+      { title: "InterviewPilot — Realistic AI interview practice" },
       { name: "description", content: "Upload your resume, run voice interviews with a multi-agent AI panel, get a coaching roadmap." },
     ],
   }),

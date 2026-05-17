@@ -21,7 +21,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
-  head: () => ({ meta: [{ title: "Settings · Vocalist" }] }),
+  head: () => ({ meta: [{ title: "Settings · InterviewPilot" }] }),
 });
 
 const LEVELS = [

@@ -17,7 +17,7 @@ import {
 
 export const Route = createFileRoute("/_authenticated/resumes")({
   component: ResumesPage,
-  head: () => ({ meta: [{ title: "Resumes · Vocalist" }] }),
+  head: () => ({ meta: [{ title: "Resumes · InterviewPilot" }] }),
 });
 
 function ResumesPage() {

@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 export type Theme = "light" | "dark" | "system";
 type ResolvedTheme = "light" | "dark";
 
-const STORAGE_KEY = "vocalist-theme";
+const STORAGE_KEY = "interviewpilot-theme";
 
 type ThemeContextValue = {
   theme: Theme;

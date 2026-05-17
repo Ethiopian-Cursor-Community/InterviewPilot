@@ -74,7 +74,7 @@ export function AppSidebar() {
             <Sparkles className="size-4 text-white" />
           </div>
           <span className="font-display text-lg font-bold tracking-tight group-data-[collapsible=icon]:hidden">
-            VOCALIST
+            InterviewPilot
           </span>
         </Link>
       </SidebarHeader>

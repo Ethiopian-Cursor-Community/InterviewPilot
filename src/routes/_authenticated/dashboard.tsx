@@ -24,7 +24,7 @@ import { StatSkeleton } from "@/components/list-skeleton";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
-  head: () => ({ meta: [{ title: "Home · Vocalist" }] }),
+  head: () => ({ meta: [{ title: "Home · InterviewPilot" }] }),
 });
 
 function computeStreak(dates: string[]): number {

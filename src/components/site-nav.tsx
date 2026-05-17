@@ -12,7 +12,7 @@ export function SiteNav() {
         <div className="size-8 rounded-lg bg-gradient-brand grid place-items-center shadow-sm shadow-brand/30 group-hover:rotate-6 transition-transform">
           <Sparkles className="size-4 text-white" />
         </div>
-        <span className="font-display text-xl font-bold tracking-tight">VOCALIST</span>
+        <span className="font-display text-xl font-bold tracking-tight">InterviewPilot</span>
       </Link>
       <div className="flex items-center gap-1.5 md:gap-3 text-sm font-medium">
         <Link

@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/learn")({
   component: LearnPage,
-  head: () => ({ meta: [{ title: "Learn · Vocalist" }] }),
+  head: () => ({ meta: [{ title: "Learn · InterviewPilot" }] }),
 });
 
 type RecType = "course" | "video" | "exercise" | "reading";

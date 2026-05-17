@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/history")({
   component: HistoryPage,
-  head: () => ({ meta: [{ title: "History · Vocalist" }] }),
+  head: () => ({ meta: [{ title: "History · InterviewPilot" }] }),
 });
 
 function HistoryPage() {

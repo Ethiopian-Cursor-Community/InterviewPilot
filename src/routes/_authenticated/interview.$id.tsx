@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/interview/$id")({
   component: Session,
-  head: () => ({ meta: [{ title: "Interview · Vocalist" }] }),
+  head: () => ({ meta: [{ title: "Interview · InterviewPilot" }] }),
 });
 
 type Msg = { role: "interviewer" | "candidate"; content: string };
@@ -61,6 +61,7 @@ function Session() {
   const [partial, setPartial] = useState("");
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [startingSession, setStartingSession] = useState(false);
   const [realGatePassed, setRealGatePassed] = useState(false);
   const [strikeWarn, setStrikeWarn] = useState(false);
 
@@ -136,28 +137,43 @@ function Session() {
     onExpire: () => autoEndRef.current("time_up"),
   });
 
+  function voiceFromInterview(): "male" | "female" {
+    const g = asQ(interview?.questions).voice_gender;
+    return g === "male" || g === "female" ? g : "female";
+  }
+
   async function playTts(
     text: string,
     opts?: { persona?: string; voiceGender?: "male" | "female" },
   ) {
+    const trimmed = text?.trim();
+    if (!trimmed) return;
+
     setAiSpeaking(true);
     try {
       const persona = opts?.persona ?? interview?.interviewer_persona ?? undefined;
-      const q = interview?.questions as
-        | { voice_gender?: "male" | "female" }
-        | null
-        | undefined;
-      const voiceGender = opts?.voiceGender ?? q?.voice_gender;
-      const res = await speak({ data: { text, persona, voiceGender } });
+      const voiceGender = opts?.voiceGender ?? voiceFromInterview();
+      const res = await speak({ data: { text: trimmed, persona, voiceGender } });
       const audio = new Audio(`data:${res.mime};base64,${res.audio}`);
       audioRef.current = audio;
       await new Promise<void>((resolve) => {
         audio.onended = () => resolve();
         audio.onerror = () => resolve();
-        audio.play().catch(() => resolve());
+        void audio.play().then(
+          () => {},
+          () => {
+            toast.error(
+              "Could not play interviewer audio. Try again or allow sound for this site.",
+            );
+            resolve();
+          },
+        );
       });
     } catch (e) {
       console.error(e);
+      toast.error(
+        e instanceof Error ? e.message : "Voice playback failed. Check ELEVENLABS_API_KEY and try again.",
+      );
     } finally {
       setAiSpeaking(false);
     }
@@ -201,36 +217,31 @@ function Session() {
 
   useEffect(() => {
     if (!interview || interview.status !== "active" || loading) return;
+    if (messages.length > 0) sessionStartedRef.current = true;
+  }, [interview, loading, messages.length]);
+
+  async function startInterviewSession() {
+    if (!interview || interview.status !== "active" || loading) return;
     if (mobileRealBlock) return;
     if (runMode === "real" && !realGatePassed) return;
-    if (sessionStartedRef.current) return;
-    if (messages.length > 0) {
-      sessionStartedRef.current = true;
-      return;
-    }
+    if (sessionStartedRef.current || messages.length > 0) return;
 
-    let cancelled = false;
+    setStartingSession(true);
     sessionStartedRef.current = true;
-    (async () => {
-      try {
-        const s = await start({ data: { interviewId: id } });
-        if (cancelled) return;
-        setMessages([{ role: "interviewer", content: s.opening }]);
-        const vg = asQ(interview.questions).voice_gender;
-        await playTts(s.opening, {
-          persona: interview.interviewer_persona ?? undefined,
-          voiceGender: vg as "male" | "female" | undefined,
-        });
-      } catch (e) {
-        sessionStartedRef.current = false;
-        toast.error(e instanceof Error ? e.message : "Could not start session");
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [interview, loading, realGatePassed, runMode, mobileRealBlock, messages.length, id]);
+    try {
+      const s = await start({ data: { interviewId: id } });
+      setMessages([{ role: "interviewer", content: s.opening }]);
+      await playTts(s.opening, {
+        persona: interview.interviewer_persona ?? undefined,
+        voiceGender: voiceFromInterview(),
+      });
+    } catch (e) {
+      sessionStartedRef.current = false;
+      toast.error(e instanceof Error ? e.message : "Could not start session");
+    } finally {
+      setStartingSession(false);
+    }
+  }
 
   useEffect(() => {
     transcriptRef.current?.scrollTo({
@@ -306,7 +317,10 @@ function Session() {
       const res = await turn({ data: { interviewId: id, candidateMessage: text } });
       setMessages((m) => [...m, { role: "interviewer", content: res.reply }]);
       setThinking(false);
-      await playTts(res.reply);
+      await playTts(res.reply, {
+        persona: interview?.interviewer_persona ?? undefined,
+        voiceGender: voiceFromInterview(),
+      });
       if (res.done) {
         setDone(true);
         toast.success("Interview complete. Generating report…");
@@ -522,33 +536,67 @@ function Session() {
 
           {!done && !showRealGate && (
             <div className="w-full max-w-xl">
-              {listening && (
-                <div className="mb-3 p-3 bg-input border border-border rounded-xl text-sm min-h-[44px]">
-                  {partial || (
-                    <span className="text-muted-foreground italic">Listening…</span>
-                  )}
-                </div>
-              )}
-              <div className="flex gap-2 justify-center">
-                {!listening ? (
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center gap-2">
+                  {interview ? (
+                    <p className="text-xs text-muted-foreground text-center mb-1">
+                      Opening uses your setup voice ({voiceFromInterview()} interviewer).
+                    </p>
+                  ) : null}
                   <Button
-                    onClick={startListening}
-                    disabled={aiSpeaking || thinking || loading || blockedByGate}
+                    onClick={() => void startInterviewSession()}
+                    disabled={
+                      loading ||
+                      startingSession ||
+                      aiSpeaking ||
+                      thinking ||
+                      blockedByGate
+                    }
                     size="lg"
                     className="bg-brand text-brand-foreground hover:opacity-90 rounded-xl glow-brand"
                   >
-                    <Mic className="size-4 mr-2" /> Speak
+                    {startingSession || aiSpeaking ? (
+                      <>
+                        <Loader2 className="size-4 mr-2 animate-spin" /> Starting…
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="size-4 mr-2" /> Start interview
+                      </>
+                    )}
                   </Button>
-                ) : (
-                  <Button
-                    onClick={stopAndSend}
-                    size="lg"
-                    className="bg-destructive text-destructive-foreground hover:opacity-90 rounded-xl"
-                  >
-                    <Square className="size-4 mr-2" /> Done speaking
-                  </Button>
-                )}
-              </div>
+                </div>
+              ) : (
+                <>
+                  {listening && (
+                    <div className="mb-3 p-3 bg-input border border-border rounded-xl text-sm min-h-[44px]">
+                      {partial || (
+                        <span className="text-muted-foreground italic">Listening…</span>
+                      )}
+                    </div>
+                  )}
+                  <div className="flex gap-2 justify-center">
+                    {!listening ? (
+                      <Button
+                        onClick={startListening}
+                        disabled={aiSpeaking || thinking || loading || blockedByGate}
+                        size="lg"
+                        className="bg-brand text-brand-foreground hover:opacity-90 rounded-xl glow-brand"
+                      >
+                        <Mic className="size-4 mr-2" /> Speak
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={stopAndSend}
+                        size="lg"
+                        className="bg-destructive text-destructive-foreground hover:opacity-90 rounded-xl"
+                      >
+                        <Square className="size-4 mr-2" /> Done speaking
+                      </Button>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>

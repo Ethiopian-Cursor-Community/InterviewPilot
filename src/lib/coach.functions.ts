@@ -3,33 +3,24 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { cursorText } from "@/lib/cursor-llm";
 import { z } from "zod";
 
-export const listCoachMessages = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-    const { data, error } = await supabase
-      .from("coach_messages")
-      .select("id, role, content, created_at")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: true })
-      .limit(200);
-    if (error) throw new Error(error.message);
-    return data ?? [];
-  });
+const coachHistoryEntry = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().max(12000),
+});
 
-export const clearCoachMessages = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-    const { error } = await supabase.from("coach_messages").delete().eq("user_id", userId);
-    if (error) throw new Error(error.message);
-    return { ok: true };
-  });
-
+/**
+ * AI coach replies (Cursor LLM). Conversation history is supplied by the client
+ * and persisted in localStorage so no `coach_messages` table is required.
+ */
 export const sendCoachMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { content: string }) =>
-    z.object({ content: z.string().min(1).max(8000) }).parse(input),
+  .inputValidator((input: { content: string; history: z.infer<typeof coachHistoryEntry>[] }) =>
+    z
+      .object({
+        content: z.string().min(1).max(8000),
+        history: z.array(coachHistoryEntry).max(40).default([]),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
@@ -59,15 +50,6 @@ export const sendCoachMessage = createServerFn({ method: "POST" })
 
     const ivById = new Map((interviewRows ?? []).map((i) => [i.id, i]));
 
-    const { data: recentCoach } = await supabase
-      .from("coach_messages")
-      .select("role, content")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(20);
-
-    const historyAsc = [...(recentCoach ?? [])].reverse();
-
     const reportLines = (reports ?? []).map((r) => {
       const iv = ivById.get(r.interview_id);
       const weaknesses = (r.weaknesses ?? []).slice(0, 3).join("; ") || "n/a";
@@ -89,27 +71,12 @@ USER PROFILE:
 RECENT INTERVIEWS (most recent first):
 ${reportLines.length ? reportLines.join("\n") : "No reports yet — encourage them to complete an interview first."}`;
 
-    const { error: insUserErr } = await supabase.from("coach_messages").insert({
-      user_id: userId,
-      role: "user",
-      content: data.content,
-    });
-    if (insUserErr) throw new Error(insUserErr.message);
-
-    const convo = historyAsc
+    const convo = data.history
       .map((m) => `${m.role === "user" ? "USER" : "ASSISTANT"}: ${m.content}`)
       .join("\n");
 
     const prompt = `${convo ? `Conversation so far:\n${convo}\n\n` : ""}USER: ${data.content}\n\nASSISTANT:`;
 
-    const replyText = (await cursorText(prompt, { system })).trim();
-
-    const { data: asstRow, error: insAsstErr } = await supabase
-      .from("coach_messages")
-      .insert({ user_id: userId, role: "assistant", content: replyText })
-      .select("id, role, content, created_at")
-      .single();
-    if (insAsstErr) throw new Error(insAsstErr.message);
-
-    return { message: asstRow };
+    const reply = (await cursorText(prompt, { system })).trim();
+    return { reply };
   });

@@ -7,7 +7,7 @@ import { z } from "zod";
 const MODEL_ID = process.env.CURSOR_MODEL_ID ?? "composer-2";
 
 const AGENT_CWD = (() => {
-  const dir = path.join(os.tmpdir(), "vocalist-cursor-agent");
+  const dir = path.join(os.tmpdir(), "interviewpilot-cursor-agent");
   try {
     fs.mkdirSync(dir, { recursive: true });
   } catch {
