@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Supabase local config — linked project via MCP
 project_id = "ivoyhrmpojvyersxbmoo"
 
@@ -6,3 +7,14 @@ enabled = true
 
 [db]
 major_version = 15
+=======
+project_id = "ivoyhrmpojvyersxbmoo"
+
+[auth]
+site_url = "http://localhost:5173"
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+>>>>>>> interview-ai-coach
