@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_IAXPE5HKYriSdfG92839xxit9GJi",
+      "name": "interview-pilot-frontend",
+      "directory": ".",
+      "orgId": "team_Z8bxInGBgJt79UEHtoOl8VBY"
+    }
+  ]
+}
