@@ -1,7 +1,12 @@
-import { useRef, useEffect, useState, useCallback } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useRef, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { sendCoachMessage } from "@/lib/coach.functions";
+import {
+  clearCoachMessages,
+  listCoachMessages,
+  sendCoachMessage,
+  type CoachMessageRow,
+} from "@/lib/coach.functions";
 import { useCoachPanel } from "@/components/coach-panel-provider";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -51,103 +56,73 @@ function CoachAssistantBody({ text }: { text: string }) {
   );
 }
 
-type StoredMsg = {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  created_at: string;
-};
-
-function storageKey(userId: string) {
-  return `interviewpilot-coach-v1:${userId}`;
+function coachQueryKey(userId: string) {
+  return ["coach-messages", userId] as const;
 }
 
 export function CoachPanel() {
   const { open, setOpen } = useCoachPanel();
   const { user, loading: authLoading } = useAuth();
+  const queryClient = useQueryClient();
+  const list = useServerFn(listCoachMessages);
   const send = useServerFn(sendCoachMessage);
+  const clear = useServerFn(clearCoachMessages);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<StoredMsg[]>([]);
-  const [storeReady, setStoreReady] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   const uid = user?.id;
 
-  useEffect(() => {
-    if (!uid) {
-      setMessages([]);
-      setStoreReady(true);
-      return;
-    }
-    setStoreReady(false);
-    try {
-      const raw = localStorage.getItem(storageKey(uid));
-      if (raw) {
-        const parsed = JSON.parse(raw) as unknown;
-        if (Array.isArray(parsed)) {
-          const cleaned = parsed.filter(
-            (m): m is StoredMsg =>
-              m &&
-              typeof m === "object" &&
-              typeof (m as StoredMsg).id === "string" &&
-              ((m as StoredMsg).role === "user" || (m as StoredMsg).role === "assistant") &&
-              typeof (m as StoredMsg).content === "string",
-          );
-          setMessages(cleaned);
-        } else {
-          setMessages([]);
-        }
-      } else {
-        setMessages([]);
-      }
-    } catch {
-      setMessages([]);
-    }
-    setStoreReady(true);
-  }, [uid]);
-
-  useEffect(() => {
-    if (!uid || !storeReady) return;
-    try {
-      localStorage.setItem(storageKey(uid), JSON.stringify(messages));
-    } catch {
-      toast.error("Could not save coach chat locally (storage full?).");
-    }
-  }, [uid, messages, storeReady]);
-
-  const sendMut = useMutation({
-    mutationFn: async (content: string) => {
-      const history = messages.map((m) => ({ role: m.role, content: m.content }));
-      return send({ data: { content, history } });
+  const messagesQuery = useQuery({
+    queryKey: uid ? coachQueryKey(uid) : ["coach-messages", "anonymous"],
+    queryFn: async () => {
+      const res = await list();
+      return res.messages;
     },
-    onSuccess: (data, content) => {
-      const now = new Date().toISOString();
-      setMessages((prev) => [
-        ...prev,
-        { id: crypto.randomUUID(), role: "user", content, created_at: now },
-        {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: data.reply,
-          created_at: now,
-        },
-      ]);
-      setInput("");
-    },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Send failed"),
+    enabled: !!uid && open,
+    staleTime: 30_000,
   });
 
-  const clearLocal = useCallback(() => {
-    setMessages([]);
-    if (uid) {
-      try {
-        localStorage.removeItem(storageKey(uid));
-      } catch {
-        /* empty */
+  const messages: CoachMessageRow[] = messagesQuery.data ?? [];
+
+  const sendMut = useMutation({
+    mutationFn: async (content: string) => send({ data: { content } }),
+    onMutate: async (content) => {
+      if (!uid) return;
+      await queryClient.cancelQueries({ queryKey: coachQueryKey(uid) });
+      const prev = queryClient.getQueryData<CoachMessageRow[]>(coachQueryKey(uid)) ?? [];
+      const now = new Date().toISOString();
+      const optimistic: CoachMessageRow[] = [
+        ...prev,
+        { id: `opt-user-${now}`, role: "user", content, created_at: now },
+      ];
+      queryClient.setQueryData(coachQueryKey(uid), optimistic);
+      setInput("");
+      return { prev };
+    },
+    onSuccess: (data) => {
+      if (!uid) return;
+      queryClient.setQueryData<CoachMessageRow[]>(coachQueryKey(uid), (prev = []) => {
+        const withoutOptimistic = prev.filter((m) => !m.id.startsWith("opt-"));
+        return [...withoutOptimistic, data.userMessage, data.assistantMessage];
+      });
+    },
+    onError: (e, _content, ctx) => {
+      if (uid && ctx?.prev) {
+        queryClient.setQueryData(coachQueryKey(uid), ctx.prev);
       }
-    }
-    toast.success("Conversation cleared.");
-  }, [uid]);
+      toast.error(e instanceof Error ? e.message : "Send failed");
+    },
+  });
+
+  const clearMut = useMutation({
+    mutationFn: async () => clear(),
+    onSuccess: () => {
+      if (!uid) return;
+      queryClient.setQueryData(coachQueryKey(uid), []);
+      toast.success("Conversation cleared.");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not clear chat"),
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -160,7 +135,7 @@ export function CoachPanel() {
     sendMut.mutate(t);
   }
 
-  const showLoading = authLoading || (!!uid && !storeReady);
+  const showLoading = authLoading || (!!uid && open && messagesQuery.isLoading);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -168,8 +143,8 @@ export function CoachPanel() {
         <SheetHeader className="p-4 border-b border-border text-left space-y-1">
           <SheetTitle className="font-display">Interview coach</SheetTitle>
           <SheetDescription className="text-xs">
-            Ask for feedback and study tips grounded in your past reports. Chat is saved on this device
-            only.
+            Ask for feedback and study tips grounded in your past reports. Chat history is saved to
+            your account.
           </SheetDescription>
         </SheetHeader>
 
@@ -181,6 +156,10 @@ export function CoachPanel() {
               </div>
             ) : !uid ? (
               <p className="text-sm text-muted-foreground text-center py-6">Sign in to use the coach.</p>
+            ) : messagesQuery.isError ? (
+              <p className="text-sm text-destructive text-center py-6">
+                Could not load chat. Try again in a moment.
+              </p>
             ) : messages.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-6">
                 Say hi — I will use your profile and recent interview reports when relevant.
@@ -249,8 +228,8 @@ export function CoachPanel() {
             variant="ghost"
             size="sm"
             className="w-full text-muted-foreground text-xs"
-            onClick={clearLocal}
-            disabled={messages.length === 0}
+            onClick={() => clearMut.mutate()}
+            disabled={messages.length === 0 || clearMut.isPending}
           >
             <Trash2 className="size-3 mr-1" /> Clear conversation
           </Button>

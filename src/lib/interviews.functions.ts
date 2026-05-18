@@ -1,8 +1,25 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { cursorText, cursorStructured } from "@/lib/cursor-llm";
+import {
+  ensureResumesBucket,
+  formatStorageError,
+  RESUMES_BUCKET,
+} from "@/lib/storage-resumes";
 import { z } from "zod";
-import type { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
+
+async function getResumeStorageClient(
+  userSupabase: SupabaseClient<Database>,
+): Promise<SupabaseClient<Database>> {
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_URL) {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await ensureResumesBucket(supabaseAdmin);
+    return supabaseAdmin;
+  }
+  return userSupabase;
+}
 
 type ProfileInsert = TablesInsert<"profiles">;
 type ProfileUpdate = TablesUpdate<"profiles">;
@@ -773,7 +790,8 @@ export const deleteResume = createServerFn({ method: "POST" })
     if (!row) throw new Error("Resume not found");
 
     if (row.file_path) {
-      await supabase.storage.from("resumes").remove([row.file_path]);
+      const storageClient = await getResumeStorageClient(supabase);
+      await storageClient.storage.from(RESUMES_BUCKET).remove([row.file_path]);
     }
     const { error } = await supabase
       .from("resumes")
@@ -814,13 +832,14 @@ export const uploadAndParseResume = createServerFn({ method: "POST" })
       `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const storagePath = `${userId}/${uid}.pdf`;
 
-    const { error: upErr } = await supabase.storage
-      .from("resumes")
+    const storageClient = await getResumeStorageClient(supabase);
+    const { error: upErr } = await storageClient.storage
+      .from(RESUMES_BUCKET)
       .upload(storagePath, bytes, {
         contentType: "application/pdf",
         upsert: false,
       });
-    if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
+    if (upErr) throw new Error(`Upload failed: ${formatStorageError(upErr.message)}`);
 
     let rawText = "";
     try {
@@ -835,7 +854,7 @@ export const uploadAndParseResume = createServerFn({ method: "POST" })
 
     const cleaned = rawText.replace(/\s+/g, " ").trim();
     if (cleaned.length < 200) {
-      await supabase.storage.from("resumes").remove([storagePath]).catch(() => {});
+      await storageClient.storage.from(RESUMES_BUCKET).remove([storagePath]).catch(() => {});
       return {
         ok: false as const,
         reason: "low_text" as const,

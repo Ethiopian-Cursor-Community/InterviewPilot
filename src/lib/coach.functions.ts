@@ -3,27 +3,87 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { cursorText } from "@/lib/cursor-llm";
 import { z } from "zod";
 
-const coachHistoryEntry = z.object({
-  role: z.enum(["user", "assistant"]),
-  content: z.string().max(12000),
-});
+const coachRole = z.enum(["user", "assistant"]);
 
-/**
- * AI coach replies (Cursor LLM). Conversation history is supplied by the client
- * and persisted in localStorage so no `coach_messages` table is required.
- */
+export type CoachMessageRow = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  created_at: string;
+};
+
+function mapCoachMessage(row: {
+  id: string;
+  role: string;
+  content: string;
+  created_at: string;
+}): CoachMessageRow | null {
+  const role = coachRole.safeParse(row.role);
+  if (!role.success) return null;
+  return {
+    id: row.id,
+    role: role.data,
+    content: row.content,
+    created_at: row.created_at,
+  };
+}
+
+export const listCoachMessages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+
+    const { data, error } = await supabase
+      .from("coach_messages")
+      .select("id, role, content, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: true })
+      .limit(100);
+
+    if (error) throw new Error(error.message);
+
+    const messages = (data ?? [])
+      .map(mapCoachMessage)
+      .filter((m): m is CoachMessageRow => m !== null);
+
+    return { messages };
+  });
+
+export const clearCoachMessages = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+
+    const { error } = await supabase.from("coach_messages").delete().eq("user_id", userId);
+
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
+  });
+
 export const sendCoachMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { content: string; history: z.infer<typeof coachHistoryEntry>[] }) =>
-    z
-      .object({
-        content: z.string().min(1).max(8000),
-        history: z.array(coachHistoryEntry).max(40).default([]),
-      })
-      .parse(input),
+  .inputValidator((input: { content: string }) =>
+    z.object({ content: z.string().min(1).max(8000) }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
+
+    const { data: prior, error: priorErr } = await supabase
+      .from("coach_messages")
+      .select("role, content")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: true })
+      .limit(40);
+
+    if (priorErr) throw new Error(priorErr.message);
+
+    const history = (prior ?? [])
+      .map((m) => {
+        const role = coachRole.safeParse(m.role);
+        if (!role.success) return null;
+        return { role: role.data, content: m.content };
+      })
+      .filter((m): m is { role: "user" | "assistant"; content: string } => m !== null);
 
     const { data: profile } = await supabase
       .from("profiles")
@@ -71,12 +131,34 @@ USER PROFILE:
 RECENT INTERVIEWS (most recent first):
 ${reportLines.length ? reportLines.join("\n") : "No reports yet — encourage them to complete an interview first."}`;
 
-    const convo = data.history
+    const convo = history
       .map((m) => `${m.role === "user" ? "USER" : "ASSISTANT"}: ${m.content}`)
       .join("\n");
 
     const prompt = `${convo ? `Conversation so far:\n${convo}\n\n` : ""}USER: ${data.content}\n\nASSISTANT:`;
 
     const reply = (await cursorText(prompt, { system })).trim();
-    return { reply };
+
+    const { data: inserted, error: insErr } = await supabase
+      .from("coach_messages")
+      .insert([
+        { user_id: userId, role: "user", content: data.content },
+        { user_id: userId, role: "assistant", content: reply },
+      ])
+      .select("id, role, content, created_at");
+
+    if (insErr) throw new Error(insErr.message);
+
+    const messages = (inserted ?? [])
+      .map(mapCoachMessage)
+      .filter((m): m is CoachMessageRow => m !== null);
+
+    const userMessage = messages.find((m) => m.role === "user");
+    const assistantMessage = messages.find((m) => m.role === "assistant");
+
+    if (!userMessage || !assistantMessage) {
+      throw new Error("Failed to save coach messages");
+    }
+
+    return { userMessage, assistantMessage };
   });

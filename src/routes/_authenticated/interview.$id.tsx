@@ -10,7 +10,7 @@ import {
   flagInterviewIntegrity,
   type InterviewQuestionsBlob,
 } from "@/lib/interviews.functions";
-import { speakText } from "@/lib/voice.functions";
+import { cancelBrowserSpeech, speakInBrowser } from "@/lib/browser-tts";
 import { Button } from "@/components/ui/button";
 import { Loader2, Mic, Square, Sparkles, Clock, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
@@ -40,7 +40,6 @@ function Session() {
   const turn = useServerFn(interviewerTurn);
   const report = useServerFn(generateReport);
   const bundle = useServerFn(getInterviewBundle);
-  const speak = useServerFn(speakText);
   const endInterviewFn = useServerFn(endInterview);
   const flagIntegrity = useServerFn(flagInterviewIntegrity);
 
@@ -66,7 +65,6 @@ function Session() {
   const [strikeWarn, setStrikeWarn] = useState(false);
 
   const recogRef = useRef<unknown>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const transcriptRef = useRef<HTMLDivElement | null>(null);
   const sessionStartedRef = useRef(false);
   const strikesRef = useRef(0);
@@ -151,28 +149,14 @@ function Session() {
 
     setAiSpeaking(true);
     try {
-      const persona = opts?.persona ?? interview?.interviewer_persona ?? undefined;
-      const voiceGender = opts?.voiceGender ?? voiceFromInterview();
-      const res = await speak({ data: { text: trimmed, persona, voiceGender } });
-      const audio = new Audio(`data:${res.mime};base64,${res.audio}`);
-      audioRef.current = audio;
-      await new Promise<void>((resolve) => {
-        audio.onended = () => resolve();
-        audio.onerror = () => resolve();
-        void audio.play().then(
-          () => {},
-          () => {
-            toast.error(
-              "Could not play interviewer audio. Try again or allow sound for this site.",
-            );
-            resolve();
-          },
-        );
+      await speakInBrowser(trimmed, {
+        persona: opts?.persona ?? interview?.interviewer_persona ?? undefined,
+        voiceGender: opts?.voiceGender ?? voiceFromInterview(),
       });
     } catch (e) {
       console.error(e);
       toast.error(
-        e instanceof Error ? e.message : "Voice playback failed. Check ELEVENLABS_API_KEY and try again.",
+        e instanceof Error ? e.message : "Voice playback failed. Try Chrome or Edge.",
       );
     } finally {
       setAiSpeaking(false);
@@ -181,7 +165,10 @@ function Session() {
 
   useEffect(() => {
     document.body.classList.add("select-none");
-    return () => document.body.classList.remove("select-none");
+    return () => {
+      document.body.classList.remove("select-none");
+      cancelBrowserSpeech();
+    };
   }, []);
 
   useEffect(() => {

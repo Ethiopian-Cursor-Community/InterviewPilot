@@ -32,7 +32,7 @@ function Landing() {
         <div className="absolute inset-x-0 top-0 h-[520px] grid-bg -z-10" />
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 border border-brand/20 text-brand text-xs font-bold tracking-wider uppercase mb-8 fade-in">
           <Sparkles className="size-3" />
-          Multi-agent AI panel · ElevenLabs voice
+          Multi-agent AI panel · built-in voice
         </div>
         <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.05] mb-7 max-w-4xl mx-auto text-balance slide-up">
           The most realistic way to{" "}
