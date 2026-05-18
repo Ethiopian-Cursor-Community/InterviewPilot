@@ -17,9 +17,11 @@ export default defineConfig(({ command, mode }) => {
   const deployTarget =
     process.env.VERCEL === "1"
       ? "vercel"
-      : process.env.CF_PAGES === "1" || process.env.CLOUDFLARE === "1"
-        ? "cloudflare"
-        : "cloudflare";
+      : process.env.NETLIFY === "true"
+        ? "netlify"
+        : process.env.CF_PAGES === "1" || process.env.CLOUDFLARE === "1"
+          ? "cloudflare"
+          : "cloudflare";
 
   const plugins = [
     tailwindcss(),
@@ -27,11 +29,13 @@ export default defineConfig(({ command, mode }) => {
     ...(command === "build"
       ? deployTarget === "vercel"
         ? [nitro()]
-        : [
-            cloudflare({
-              viteEnvironment: { name: "ssr" },
-            }),
-          ]
+        : deployTarget === "netlify"
+          ? [nitro({ preset: "netlify" })]
+          : [
+              cloudflare({
+                viteEnvironment: { name: "ssr" },
+              }),
+            ]
       : []),
     tanstackStart({
       importProtection: {
